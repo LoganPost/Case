@@ -4,7 +4,7 @@ movementSpeed=.1
 class Piece(pg.sprite.Sprite):
     def __init__(self,color,shape,rank):
         super().__init__()
-        self.image=pg.image.load(color+" "+shape+".png")
+        self.image=pg.image.load("Pieces/"+color+" "+shape+".png")
         self.image=pg.transform.rotozoom(self.image,0,80/(self.image.get_width()+self.image.get_height()))
         self.rect=self.image.get_rect(center=(300,300))
         self.pos3=V((0,0,0))

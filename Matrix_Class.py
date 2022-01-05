@@ -87,6 +87,10 @@ class Matrix(list):
         return Matrix([[round(el,dec) for el in row] for row in self])
     def apply(self,vec):
         return V(sum(row[i]*vec[i] for i in range(len(vec))) for row in self)
+    def strict_normalize(self):
+        for i,v in enumerate(self):
+            ln=sum(j**2 for j in v)**(1/2)
+            self[i]=[j/ln for j in v]
 class V(tuple):
     def __add__(self,other):
         if isinstance(other,float):

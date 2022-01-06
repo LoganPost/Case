@@ -196,8 +196,13 @@ while True:
                             memory.append(B.copy())
                             if B.get(pos) >= 0:
                                 game_over=True
+                                if selectedPiece.rank%2==0:
+                                    blue_victory=True
+                                else:
+                                    orange_victory=True
                             selectedPiece.goto(B, pos)
-                            game_over=check_game_over()
+                            if check_game_over():
+                                game_over=True
                             if turn==0:
                                 turn=1
                             else:

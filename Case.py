@@ -4,8 +4,9 @@ from Matrix_Class import Matrix,V
 from math import sin, cos,pi
 from Case_Board import Board,newBoard,getAdjacent
 from Sprite_Classes import Piece,ftt
+from Button_Class import Button
 import time
-memory=[]
+debug=not True
 def r(Orientation,dX): #Apply a mouse movement to the matrix
     dx,dy=dX
     cdx,sdx,cdy,sdy=cos(dx),sin(dx),cos(dy),sin(dy)
@@ -18,19 +19,7 @@ def cast(X): #Turn the 3 vector into a 2 vector ... -ish
     return V((X[1],-X[2]))
 def transform(P,X,zoom=1,shift=V((0,0))): #Transform the 3 vector into what goes on the screen
     return cast(P.apply(X)*zoom)+shift
-# def ftt(vec):
-#     # print(hyper_theta,)
-#     if rotating:
-#         ht=hyper_theta*pi/180
-#         htt=(1-cos(ht))*pi/2
-#         vec=(vec[0],vec[1],vec[2]+(vec[3]*2-1)*sin(ht)/3,((vec[3]*2-1)*cos(htt)+1)/2)
-#     elif rotating:
-#         ht=hyper_theta*pi/180
-#         vec=(vec[0],vec[1],vec[2]+(vec[3]*2-1)*sin(ht)/3,((vec[3]*2-1)*cos(ht)+1)/2)
-#     elif hyper_theta:
-#         vec=(vec[0],vec[1],vec[2],1-vec[3])
-#     # print(vec)
-#     return (V((vec[:3]))-(0.5,0.5,0.5))*(1+vec[3])
+
 def order(vec3):
     return P.apply(vec3)[0]
 class Line():
@@ -52,7 +41,7 @@ class Line():
         if color=="null":
             color=self.color
         #255 * (self.end() + (1, 1, 1)) / 2
-        pg.draw.line(screen, color, transform(P, ftt(self.start), zoom, shift+self.shift), transform(P, ftt(self.end), zoom, shift+self.shift),width=3)
+        pg.draw.line(screen, color, transform(P, ftt(self.start), zoom, shift+self.shift), transform(P, ftt(self.end), zoom, shift+self.shift),width=line_width)
     def midpoint(self):
         return (self.start+self.end)/2
 class Corner():
@@ -100,6 +89,7 @@ def check_game_over():
 pg.init()
 P=Matrix([[1,0,0],[0,1,0],[0,0,1]])
 P=r(P,(.05,.05))
+memory=[]
 zoom=130
 sensitivity=0.01
 hyper_theta=-90
@@ -140,6 +130,13 @@ ov_text=myFont.render("Orange Wins",True,(30,30,30))
 ov_text_rect=ov_text.get_rect(midtop=(850,80))
 bv_text=myFont.render("Blue Wins",True,(30,30,30))
 bv_text_rect=bv_text.get_rect(midtop=(850,80))
+
+if debug:
+    line_width_slider=Button((30,10),(60,60,60),thickness=1)
+    line_width_slider.center((50,260))
+    line_width=int(line_width_slider.rect.centery/10-24)
+else:
+    line_width=2
 
 oRock=Piece("Orange","Rock",3);
 oPaper=Piece("Orange","Paper",1);
@@ -220,7 +217,10 @@ while True:
                                     selectedPiece=piece
                                     print(selectedPiece)
                 if not selected:
-                    leftClicking = True
+                    if debug and line_width_slider.collidepoint(mPos):
+                        line_width_slider.pressed=True
+                    else:
+                        leftClicking = True
             elif event.button==4:
                 rotating=1
             elif event.button==5:
@@ -235,6 +235,8 @@ while True:
         elif event.type==pg.MOUSEBUTTONUP:
             if event.button==1:
                 leftClicking=False
+                if debug:
+                    line_width_slider.pressed=False
         elif event.type==pg.KEYDOWN:
             if event.key==pg.K_b:
                 undo()
@@ -265,6 +267,9 @@ while True:
             rotating=0
             hyper_theta=0
     screen.blit(background,(0,0))
+    if debug:
+        pg.draw.line(screen,(0,0,0),(50,250),(50,350))
+        line_width_slider.blit(screen)
     if game_over:
         screen.blit(go_text,go_text_rect)
         if orange_victory:
@@ -284,7 +289,9 @@ while True:
         screen.blit(orange_turn_text,orange_turn_text_rect)
     # for corn1,corn2 in zip(outsideCorners,insideCorners):
     #     Line(corn1.pos,corn2.pos,(160,160,160)).blit(screen)
-
+    if debug and line_width_slider.pressed:
+        line_width_slider.center((50,max(min(pg.mouse.get_pos()[1],350),250)))
+        line_width=int(line_width_slider.rect.centery/10-24)
     for i in pieces:
         i.ORDER=(P.apply(i.pos3))[0]
     pieces.sort(key = lambda x: x.order())

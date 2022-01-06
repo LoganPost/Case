@@ -52,7 +52,7 @@ class Line():
         if color=="null":
             color=self.color
         #255 * (self.end() + (1, 1, 1)) / 2
-        pg.draw.line(screen, color, transform(P, ftt(self.start), zoom, shift+self.shift), transform(P, ftt(self.end), zoom, shift+self.shift),width=2)
+        pg.draw.line(screen, color, transform(P, ftt(self.start), zoom, shift+self.shift), transform(P, ftt(self.end), zoom, shift+self.shift),width=3)
     def midpoint(self):
         return (self.start+self.end)/2
 class Corner():
@@ -164,7 +164,7 @@ def reset_board(B):
 B=newBoard()
 set_up_board(B)
 
-background=pg.Surface(window_size); background.fill((200,210,200))
+background=pg.Surface(window_size); background.fill((200,205,200))
 ranked_pieces=[bRock,oPaper,bScissors,oRock,bPaper,oScissors]
 pieces=ranked_pieces[:]
 objects=[i for i in ranked_pieces]

@@ -20,11 +20,7 @@ def ftt(vec):
     elif hyper_theta:
         vec=(vec[0],vec[1],vec[2],1-vec[3])
 
-    # ht=hyper_theta*pi/180
-    # vec=(vec[0],vec[1],vec[2]+(vec[3]*2-1)*sin(ht)/3,((vec[3]*2-1)*cos(ht)+1)/2)
     return (V((vec[:3]))-(0.5,0.5,0.5))*(1+vec[3])
-
-
 class Piece(pg.sprite.Sprite):
     def __init__(self,color,shape,rank):
         super().__init__()

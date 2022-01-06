@@ -98,7 +98,6 @@ def check_game_over():
         return True
     return False
 pg.init()
-
 P=Matrix([[1,0,0],[0,1,0],[0,0,1]])
 P=r(P,(.05,.05))
 zoom=130

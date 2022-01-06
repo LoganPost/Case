@@ -1,5 +1,6 @@
 import pygame as pg
 from Matrix_Class import V, Matrix
+from math import sin, cos,pi
 movementSpeed=.1
 
 
@@ -8,6 +9,19 @@ def cast(X): #Turn the 3 vector into a 2 vector ... -ish
 def transform(P,X,zoom=1,shift=V((0,0))): #Transform the 3 vector into what goes on the screen
     return cast(P.apply(X)*zoom)+shift
 def ftt(vec):
+    if rotating:
+        ht=hyper_theta*pi/180
+        htt=(1-cos(ht))*pi/2
+        sht=(vec[3]*2-1)*sin(ht)/5
+        vec=(vec[0],vec[1],vec[2]+sht,((vec[3]*2-1)*cos(htt)+1)/2)
+    elif rotating:
+        ht=hyper_theta*pi/180
+        vec=(vec[0],vec[1],vec[2]+(vec[3]*2-1)*sin(ht)/3,((vec[3]*2-1)*cos(ht)+1)/2)
+    elif hyper_theta:
+        vec=(vec[0],vec[1],vec[2],1-vec[3])
+
+    # ht=hyper_theta*pi/180
+    # vec=(vec[0],vec[1],vec[2]+(vec[3]*2-1)*sin(ht)/3,((vec[3]*2-1)*cos(ht)+1)/2)
     return (V((vec[:3]))-(0.5,0.5,0.5))*(1+vec[3])
 
 
@@ -27,37 +41,30 @@ class Piece(pg.sprite.Sprite):
         self.rank=rank
         self.dimIndex=0
         self.selected=False
-        self.destination=V((0,0,0))
+        self.destination=self.pos4
         self.destinationDim="green"
         self.travelling=False
     def goto(self,board,pos4):
-        # print("Our vector looks like THIS!: ",self.pos3)
-        # print(self.dimIndex)
         self.destination=V(pos4)
         self.travelling=True
         board.setpos(self.pos4,-1)
         board.setpos(self.destination,self.rank)
-        # board[self.pos3[0]][self.pos3[1]][self.pos3[2]][self.dimIndex] = 0
-        # print("We're currently at: ",str(self.pos3),"in dimension ",str(self.dimIndex)," at ",str(self.dim))
-        # print("Let's go to: ",str(vec)," in dimension ",str(dim))
-         #board[vec[0]][vec[1]][vec[2]][dimIndex] = self
-        # print("We're currently at: ",str(self.pos3),"in dimension ",str(self.dimIndex)," at ",str(self.dim))
-        # print("Let's go to: ",str(self.destination)," in dimension ",str(dimIndex)," at ",str(self.destinationDim))
-    def update(self,P,zoom,shift):
+    def update(self,P,zoom,shift,hpt,rtt):
         if self.travelling:
-            if abs(self.destination-self.pos4)>.01:
+            if abs(self.destination-self.pos4)>movementSpeed:
                 self.pos4+=(self.destination-self.pos4).normalize()*movementSpeed
             else:
                 self.pos4=self.destination
                 self.travelling=False
+        global hyper_theta,rotating
+        hyper_theta,rotating=(hpt,rtt)
         self.pos3=ftt(self.pos4)
         self.pos2=transform(P,self.pos3,zoom,shift)
-    def telp(self,vec,board):
+    def telp(self,board,vec):
         board.setpos(self.pos4,-1)
         board.setpos(vec, self.rank)
-        # board[self.pos3[0]][self.pos3[1]][self.pos3[2]][self.dimIndex] = 0
         self.pos4=vec
-        self.pos3 = ftt(self.pos4)
+        self.destination=vec
     def __repr__(self):
         return str("{} {} with rank {}".format(self.color,self.shape,self.rank))
     def blit(self,screen):
@@ -77,4 +84,6 @@ class Piece(pg.sprite.Sprite):
                 self.destination = V(s)
                 # print(self.destination!=self.pos4)
                 self.travelling = True
+    def order(self):
+        return self.ORDER+.02
     pass;

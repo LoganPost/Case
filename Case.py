@@ -165,7 +165,6 @@ B=newBoard()
 set_up_board(B)
 
 background=pg.Surface(window_size); background.fill((200,210,200))
-# B.sps()
 ranked_pieces=[bRock,oPaper,bScissors,oRock,bPaper,oScissors]
 pieces=ranked_pieces[:]
 objects=[i for i in ranked_pieces]

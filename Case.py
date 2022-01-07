@@ -58,7 +58,7 @@ class Corner():
     def blit(self,screen,color="null"):
         if color=="null":
             color=self.color
-        pg.draw.ellipse(screen,color,(transform(P, ftt(self.pos), zoom, shift+self.shift)-(10,10),(20,20)))
+        pg.draw.ellipse(screen,color,(transform(P, ftt(self.pos), zoom, shift+self.shift)-(10,10),V((20,20))*(1+self.order()/10)))
         #255 * (self.end() + (1, 1, 1)) / 2
         # pg.draw.line(screen, color, transform(P, self.start, zoom, shift+self.shift), transform(P, self.end, zoom, shift+self.shift),width=2)
 def undo():
@@ -80,9 +80,6 @@ def check_game_over():
     if orange_win:
         global orange_victory
         orange_victory=True
-    if blue_win:
-        global blue_victory
-        blue_victory = True
     if blue_win or orange_win:
         return True
     return False
@@ -123,12 +120,12 @@ turnIm=myFont.render("Turn: ",True,(64,64,64))
 orange_turn_text=myFont.render("Orange", True, (170, 95, 40))
 blue_turn_text=myFont.render( "Blue",True, (0,0,140))
 instr_color=(40,40,40)
-instr_1=smaller_font.render("Click on a piece to select and click to move to an adjacent spot.",True,instr_color)
-instr_1_rect=instr_1.get_rect(bottomright=(990,540))
-instr_2=smaller_font.render("To win, take an enemy piece, by rock-paper-scissors rules, or get all pieces to the enemy color.",True,instr_color)
-instr_2_rect=instr_2.get_rect(bottomright=(990,563))
-instr_3=smaller_font.render("Right click or 'b' to undo, 'r' to restart, click and drag to rotate. Scroll to fold the fourth dimension",True,instr_color)
-instr_3_rect=instr_3.get_rect(bottomright=(990,586))
+instr_1=smaller_font.render("Click on a piece to select, then click to move to a connected spot.",True,instr_color)
+instr_1_rect=instr_1.get_rect(bottomright=(992,543))
+instr_2=smaller_font.render("To win, take an enemy piece, by rock-paper-scissors rules, or move all pieces to the enemy's color.",True,instr_color)
+instr_2_rect=instr_2.get_rect(bottomright=(992,567))
+instr_3=smaller_font.render("Arrows, 'wasd', or drag on the screen to rotate. Right click or 'q' to undo. 'r' to restart. Scroll or spacebar to fold the 4th dimension.",True,instr_color)
+instr_3_rect=instr_3.get_rect(bottomright=(992,590))
 turnImRect=turnIm.get_rect(bottomright=(200,80))
 orange_turn_text_rect=orange_turn_text.get_rect(bottomleft=(200,80))
 blue_turn_text_rect=blue_turn_text.get_rect(bottomleft=(200,80))
@@ -184,7 +181,6 @@ rotating=1
 folding_speed=3
 game_over=False
 orange_victory=False
-blue_victory=False
 dX=V((.5,.1))
 hyper_theta=-180
 while True:
@@ -202,9 +198,7 @@ while True:
                             memory.append(B.copy())
                             if B.get(pos) >= 0:
                                 game_over=True
-                                if selectedPiece.rank%2==0:
-                                    blue_victory=True
-                                else:
+                                if selectedPiece.rank%2==1:
                                     orange_victory=True
                             selectedPiece.goto(B, pos)
                             if check_game_over():
@@ -240,7 +234,6 @@ while True:
                 selected = False
                 selectedPiece.selected=False
                 game_over = check_game_over()
-                blue_victory = False
                 orange_victory = False
         elif event.type==pg.MOUSEBUTTONUP:
             if event.button==1:
@@ -248,12 +241,11 @@ while True:
                 if debug:
                     line_width_slider.pressed=False
         elif event.type==pg.KEYDOWN:
-            if event.key==pg.K_b:
+            if event.key==pg.K_q:
                 undo()
                 selected=False
                 selectedPiece.selected = False
                 game_over=check_game_over()
-                blue_victory=False
                 orange_victory=False
             elif event.key==pg.K_r or event.key==pg.K_TAB:
                 B = newBoard()
@@ -261,7 +253,6 @@ while True:
                 turn = 1
                 memory = []
                 game_over=False
-                blue_victory = False
                 orange_victory = False
             elif event.key==pg.K_SPACE:
                 rotating=1
@@ -274,20 +265,23 @@ while True:
         keys=pg.key.get_pressed()
         scrl=.05
         dxx=V((0,0))
-        if keys[pg.K_LEFT]:
+        if keys[pg.K_LEFT] or keys[pg.K_a]:
             dxx+=(1,0)
-        if keys[pg.K_RIGHT]:
+        if keys[pg.K_RIGHT]or keys[pg.K_d]:
             dxx += (-1,0)
-        if keys[pg.K_DOWN]:
+        if keys[pg.K_DOWN]or keys[pg.K_s]:
             dxx+=(0,1)
-        if keys[pg.K_UP]:
+        if keys[pg.K_UP]or keys[pg.K_w]:
             dxx+=(0,-1)
         if dxx!=(0,0):
-            dX=dxx*scrl
+            dX+=dxx.normalize()*scrl/10
+            # dX = dxx * scrl
             P = r(P, dX)
         else:
             P = r(P, dX)
-            dX*=0.9
+            if dX[0]**2+dX[1]**2<0.000001:
+                dX=V((0,0))
+        dX *= 0.9
     if rotating:
         hyper_theta+=folding_speed*rotating
         if hyper_theta==180 or hyper_theta==-180:

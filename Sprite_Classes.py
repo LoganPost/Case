@@ -25,6 +25,7 @@ class Piece(pg.sprite.Sprite):
     def __init__(self,color,shape,rank):
         super().__init__()
         image=pg.image.load("Pieces/"+color+" "+shape+".png")
+        self.full_image=image
         self.image=pg.transform.rotozoom(image,0,80/(image.get_width()+image.get_height()))
         self.selected_image=pg.transform.rotozoom(image,0,100/(image.get_width()+image.get_height()))
         self.rect=self.image.get_rect(center=(300,300))
@@ -65,11 +66,18 @@ class Piece(pg.sprite.Sprite):
         return str("{} {} with rank {}".format(self.color,self.shape,self.rank))
     def blit(self,screen):
         if self.selected:
-            self.selected_rect.center=self.pos2
-            screen.blit(self.selected_image, self.selected_rect)
+            image=self.selected_image
+            rect=self.selected_rect
+            # sizing=100
         else:
-            self.rect.center = self.pos2
-            screen.blit(self.image, self.rect)
+            image=self.image
+            # sizing=80
+            rect = self.rect
+        # image=pg.transform.rotozoom(self.full_image, 0, sizing*(1+self.ORDER/10) / (self.full_image.get_width() + self.full_image.get_height()))
+        # image=pg.transform.rotozoom(image,0,1+self.ORDER/20)
+        # rect=image.get_rect(center=self.pos2)
+        rect.center=self.pos2
+        screen.blit(image,rect)
     def find_yourself(self,board):
         # print(len(board.all_spots()))
         for s in board.all_spots():

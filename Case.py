@@ -5,6 +5,7 @@ from math import sin, cos,pi
 from Case_Board import Board,newBoard,getAdjacent
 from Sprite_Classes import Piece,ftt
 from Button_Class import Button
+from random import random
 import time
 debug=not True
 def r(Orientation,dX): #Apply a mouse movement to the matrix
@@ -256,6 +257,8 @@ while True:
                 orange_victory = False
             elif event.key==pg.K_SPACE:
                 rotating=1
+            elif event.key==pg.K_p:
+                dX=V((random()*40-20,random()*40-20))
     if leftClicking:
         newPos=V(pg.mouse.get_pos())
         dX=sensitivity*(newPos-mPos).pmul((-1,1))
@@ -284,6 +287,7 @@ while True:
         dX *= 0.9
     if rotating:
         hyper_theta+=folding_speed*rotating
+        print(hyper_theta)
         if hyper_theta==180 or hyper_theta==-180:
             rotating=0
             hyper_theta=180

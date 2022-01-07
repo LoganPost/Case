@@ -92,7 +92,6 @@ P=r(P,(.05,.05))
 memory=[]
 zoom=130
 sensitivity=0.01
-hyper_theta=-90
 clock=pg.time.Clock()
 window_size=V((1000,600))
 clickProximity=28
@@ -101,9 +100,17 @@ screen=pg.display.set_mode(window_size)
 leftClicking=pg.mouse.get_pressed()[0]
 lines=[]
 for dim in range(2):
-    lines += [Line(V((0, j, k,dim)), V((1, j, k,dim))) for j in (0, 1) for k in (0, 1)]
-    lines += [Line(V((i, j, 0,dim)), V((i, j, 1,dim))) for j in (0, 1) for i in (0, 1)]
-    lines += [Line(V((i,0, k,dim)), V((i, 1, k,dim))) for i in (0, 1) for k in (0, 1)]
+    lines += [Line(V((0, j, k,dim)), V((.5, j, k,dim))) for j in (0, 1) for k in (0, 1)]
+    lines += [Line(V((i, j, 0,dim)), V((i, j, .5,dim))) for j in (0, 1) for i in (0, 1)]
+    lines += [Line(V((i,0, k,dim)), V((i, .5, k,dim))) for i in (0, 1) for k in (0, 1)]
+
+    lines += [Line(V((.5, j, k,dim)), V((1, j, k,dim))) for j in (0, 1) for k in (0, 1)]
+    lines += [Line(V((i, j, .5,dim)), V((i, j, 1,dim))) for j in (0, 1) for i in (0, 1)]
+    lines += [Line(V((i,.5, k,dim)), V((i, 1, k,dim))) for i in (0, 1) for k in (0, 1)]
+# for dim in range(2):
+#     lines += [Line(V((0, j, k,dim)), V((1, j, k,dim))) for j in (0, 1) for k in (0, 1)]
+#     lines += [Line(V((i, j, 0,dim)), V((i, j, 1,dim))) for j in (0, 1) for i in (0, 1)]
+#     lines += [Line(V((i,0, k,dim)), V((i, 1, k,dim))) for i in (0, 1) for k in (0, 1)]
 
 outsideCorners=[Corner(V((i, j, k,1)),(120, 100, 80)) for i in (0, 1) for j in (0, 1) for k in (0, 1)]
 insideCorners =[Corner(V((i, j, k,0)),(100, 100, 130)) for i in (0, 1) for j in (0, 1) for k in (0, 1)]
@@ -137,7 +144,7 @@ if debug:
     line_width_slider.center((50,260))
     line_width=int(line_width_slider.rect.centery/10-24)
 else:
-    line_width=2
+    line_width=3
 
 oRock=Piece("Orange","Rock",3);
 oPaper=Piece("Orange","Paper",1);
@@ -178,6 +185,8 @@ folding_speed=3
 game_over=False
 orange_victory=False
 blue_victory=False
+dX=V((.5,.1))
+hyper_theta=-180
 while True:
     for event in pg.event.get():
         if event.type==pg.QUIT:
@@ -246,7 +255,7 @@ while True:
                 game_over=check_game_over()
                 blue_victory=False
                 orange_victory=False
-            elif event.key==pg.K_r or event.key==pg.K_SPACE:
+            elif event.key==pg.K_r or event.key==pg.K_TAB:
                 B = newBoard()
                 reset_board(B)
                 turn = 1
@@ -254,11 +263,31 @@ while True:
                 game_over=False
                 blue_victory = False
                 orange_victory = False
+            elif event.key==pg.K_SPACE:
+                rotating=1
     if leftClicking:
         newPos=V(pg.mouse.get_pos())
         dX=sensitivity*(newPos-mPos).pmul((-1,1))
         mPos=newPos
         P=r(P,dX)
+    else:
+        keys=pg.key.get_pressed()
+        scrl=.05
+        dxx=V((0,0))
+        if keys[pg.K_LEFT]:
+            dxx+=(1,0)
+        if keys[pg.K_RIGHT]:
+            dxx += (-1,0)
+        if keys[pg.K_DOWN]:
+            dxx+=(0,1)
+        if keys[pg.K_UP]:
+            dxx+=(0,-1)
+        if dxx!=(0,0):
+            dX=dxx*scrl
+            P = r(P, dX)
+        else:
+            P = r(P, dX)
+            dX*=0.9
     if rotating:
         hyper_theta+=folding_speed*rotating
         if hyper_theta==180 or hyper_theta==-180:

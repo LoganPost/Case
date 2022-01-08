@@ -182,7 +182,7 @@ rotating=1
 folding_speed=3
 game_over=False
 orange_victory=False
-dX=V((.5,.1))
+dX=V((.1,.05))
 hyper_theta=-180
 while True:
     for event in pg.event.get():
@@ -220,7 +220,7 @@ while True:
                                     selected=True
                                     piece.selected=True
                                     selectedPiece=piece
-                                    print(selectedPiece)
+                                    # print(selectedPiece)
                 if not selected:
                     if debug and line_width_slider.collidepoint(mPos):
                         line_width_slider.pressed=True
@@ -287,7 +287,7 @@ while True:
         dX *= 0.9
     if rotating:
         hyper_theta+=folding_speed*rotating
-        print(hyper_theta)
+        # print(hyper_theta)
         if hyper_theta==180 or hyper_theta==-180:
             rotating=0
             hyper_theta=180

@@ -4,6 +4,9 @@ from Matrix_Class import V
 debug=False
 pg.init()
 
+# THIS CONSTANT SCALES THE DISPLAY SIZE OF THE ENTIRE GAME! USE WHOLE NUMBERS.
+evscl=1
+
 rad=10 # Corner radius of buttons
 class Button():
     def __init__(self,size,color,text="",text_color=(0,0,0),font=pg.font.SysFont('calibri', 20),thickness=2):
@@ -58,11 +61,11 @@ class Button():
         if clicking or self.pressed: # Draw the button; make it different if the button is being pressed.
             pg.draw.rect(surf, self.color*.9, self.rect, border_radius=rad)  # Draw bg, darker if being pressed
             surf.blit(self.text_surface, self.text_rect)  # Write text
-            pg.draw.rect(surf, V(self.color)/3, self.rect, self.thickness*2,border_radius=rad) # Thicker border
+            pg.draw.rect(surf, V(self.color)/3, self.rect, self.thickness*2*evscl,border_radius=rad*evscl) # Thicker border
         else:
             pg.draw.rect(surf, self.color, self.rect, border_radius=rad)  # Draw background
             surf.blit(self.text_surface, self.text_rect)  # Write text
-            pg.draw.rect(surf, V(self.color)/3, self.rect, self.thickness,border_radius=rad)
+            pg.draw.rect(surf, V(self.color)/3, self.rect, self.thickness*evscl,border_radius=rad*evscl)
     def midleft(self,loc): # Move button by setting the midleft point
         self.rect.midleft=loc   # Move rect
         self.text_rect.center=self.rect.center+self.text_shift  # Recenter text (with shift)
@@ -116,20 +119,3 @@ class TextBox():
         self.center(self.middle)                                # Re center
     def blit(self,screen): #Draws the textbox on the screen
         screen.blit(self.surf,self.rect)
-
-class Bonus():
-    def __init__(self,text,color,font=pg.font.SysFont("calibri",40),size=(40,40)):
-        self.text=text
-        self.color=V(color)
-        self.font=font
-        self.size=size
-        # self.surf=pg.Surface(self.size, pg.SRCALPHA, 32).convert_alpha()
-        # self.rect=self.surf.get_rect()
-        # pg.draw.ellipse(self.surf,self.color,pg.Rect((0,0),self.size))
-        self.tsurf=font.render(self.text,True,(220,220,220))
-    def stamp(self,screen,pos,size):
-        size=V(size)
-        surf=pg.transform.scale(self.tsurf,size/2)
-        pg.draw.ellipse(screen, self.color, pg.Rect(pos+size*.1, size*.8))
-        screen.blit(surf,pos+size/4)
-        # screen.blit(surf,pos)

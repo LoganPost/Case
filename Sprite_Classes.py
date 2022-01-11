@@ -1,8 +1,8 @@
 import pygame as pg
 from Matrix_Class import V, Matrix
 from math import sin, cos,pi
+from Button_Class import evscl
 movementSpeed=.1
-
 
 def cast(X): #Turn the 3 vector into a 2 vector ... -ish
     return V((X[1],-X[2]))
@@ -26,8 +26,8 @@ class Piece(pg.sprite.Sprite):
         super().__init__()
         image=pg.image.load("Pieces/"+color+" "+shape+".png")
         self.full_image=image
-        self.image=pg.transform.rotozoom(image,0,80/(image.get_width()+image.get_height()))
-        self.selected_image=pg.transform.rotozoom(image,0,100/(image.get_width()+image.get_height()))
+        self.image=pg.transform.rotozoom(image,0,evscl*80/(image.get_width()+image.get_height()))
+        self.selected_image=pg.transform.rotozoom(image,0,evscl*100/(image.get_width()+image.get_height()))
         self.rect=self.image.get_rect(center=(300,300))
         self.selected_rect=self.selected_image.get_rect()
         self.pos2=V((0,0))

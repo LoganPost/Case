@@ -6,6 +6,7 @@ from Case_Board import Board,newBoard,getAdjacent
 from Sprite_Classes import Piece,ftt
 from Button_Class import Button
 from random import random
+from Button_Class import evscl
 import time
 debug=not True
 def r(Orientation,dX): #Apply a mouse movement to the matrix
@@ -59,7 +60,9 @@ class Corner():
     def blit(self,screen,color="null"):
         if color=="null":
             color=self.color
-        pg.draw.ellipse(screen,color,(transform(P, ftt(self.pos), zoom, shift+self.shift)-(10,10),V((20,20))*(1+self.order()/10)))
+        temp=20 * (1 + self.order() / 10) * evscl
+        temp=V((temp,temp))
+        pg.draw.ellipse(screen,color,(transform(P, ftt(self.pos), zoom, shift+self.shift)-temp/2,temp))
         #255 * (self.end() + (1, 1, 1)) / 2
         # pg.draw.line(screen, color, transform(P, self.start, zoom, shift+self.shift), transform(P, self.end, zoom, shift+self.shift),width=2)
 def undo():
@@ -88,10 +91,10 @@ pg.init()
 P=Matrix([[1,0,0],[0,1,0],[0,0,1]])
 P=r(P,(.05,.05))
 memory=[]
-zoom=130
+zoom=130*evscl
 sensitivity=0.01
 clock=pg.time.Clock()
-window_size=V((1000,600))
+window_size=V((1000,600))*evscl
 clickProximity=28
 shift=window_size/2
 screen=pg.display.set_mode(window_size)
@@ -115,34 +118,36 @@ insideCorners =[Corner(V((i, j, k,0)),(100, 100, 130)) for i in (0, 1) for j in 
 corners=insideCorners+outsideCorners
 
 turn=1
-myFont=pg.font.SysFont("calibri",50)
-smaller_font=pg.font.SysFont("calibri",19)
+myFont=pg.font.SysFont("calibri",50*evscl)
+smaller_font=pg.font.SysFont("calibri",19*evscl)
 turnIm=myFont.render("Turn: ",True,(64,64,64))
 orange_turn_text=myFont.render("Orange", True, (170, 95, 40))
 blue_turn_text=myFont.render( "Blue",True, (0,0,140))
 instr_color=(40,40,40)
 instr_1=smaller_font.render("Click on a piece to select, then click to move to a connected spot.",True,instr_color)
-instr_1_rect=instr_1.get_rect(bottomright=(992,543))
+instr_1_rect=instr_1.get_rect(bottomright=window_size-V((8,56))*evscl)
 instr_2=smaller_font.render("To win, take an enemy piece, by rock-paper-scissors rules, or move all pieces to the enemy's color.",True,instr_color)
-instr_2_rect=instr_2.get_rect(bottomright=(992,567))
-instr_3=smaller_font.render("Arrows, 'wasd', or drag on the screen to rotate. Right click or 'q' to undo. 'r' to restart. Scroll or spacebar to fold the 4th dimension.",True,instr_color)
-instr_3_rect=instr_3.get_rect(bottomright=(992,590))
-turnImRect=turnIm.get_rect(bottomright=(200,80))
-orange_turn_text_rect=orange_turn_text.get_rect(bottomleft=(200,80))
-blue_turn_text_rect=blue_turn_text.get_rect(bottomleft=(200,80))
+instr_2_rect=instr_2.get_rect(bottomright=window_size-V((8,33))*evscl)
+instr_3=smaller_font.render("Arrows, 'wasd', or drag on screen to rotate. Right click or 'q' to undo. 'r' to restart. Scroll or spacebar to fold the 4th dimension.",True,instr_color)
+instr_3_rect=instr_3.get_rect(bottomright=window_size-V((8,10))*evscl)
+temp=V((200,80))*evscl
+turnImRect=turnIm.get_rect(bottomright=temp)
+orange_turn_text_rect=orange_turn_text.get_rect(bottomleft=temp)
+blue_turn_text_rect=blue_turn_text.get_rect(bottomleft=temp)
 go_text=myFont.render("Game Over",True,(30,30,30))
-go_text_rect=go_text.get_rect(midbottom=(850,80))
+temp=V((850,80))*evscl
+go_text_rect=go_text.get_rect(midbottom=temp)
 ov_text=myFont.render("Orange Wins",True,(30,30,30))
-ov_text_rect=ov_text.get_rect(midtop=(850,80))
+ov_text_rect=ov_text.get_rect(midtop=temp)
 bv_text=myFont.render("Blue Wins",True,(30,30,30))
-bv_text_rect=bv_text.get_rect(midtop=(850,80))
+bv_text_rect=bv_text.get_rect(midtop=temp)
 
 if debug:
     line_width_slider=Button((30,10),(60,60,60),thickness=1)
     line_width_slider.center((50,260))
     line_width=int(line_width_slider.rect.centery/10-24)
 else:
-    line_width=3
+    line_width=3*evscl
 
 oRock=Piece("Orange","Rock",3);
 oPaper=Piece("Orange","Paper",1);

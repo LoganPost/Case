@@ -3,4 +3,5 @@
 ## Rules:
 The goal of the game is to take one of your opponent's pieces. Each turn, you can move one piece along one line of the hypercube. Rock takes Scissors, Scissors takes Paper, and Paper takes Rock.
 
-![Case_Image](https://user-images.githubusercontent.com/95844502/148148878-72378ea8-bd48-46a1-8429-79ddf203129d.png)
+
+![Case_Image_Improved](https://user-images.githubusercontent.com/95844502/149033138-9e29b480-1194-4d69-9b88-0ff051548b2e.png)
